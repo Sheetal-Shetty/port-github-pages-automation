@@ -9,44 +9,8 @@ on:
         type: string
 
 jobs:
-  deploy:
+  debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract repo details
-        run: |
-          REPO_URL="${{ github.event.inputs.repo_url }}"
-          OWNER=$(echo $REPO_URL | cut -d/ -f4)
-          REPO=$(echo $REPO_URL | cut -d/ -f5)
-          echo "OWNER=$OWNER" >> $GITHUB_ENV
-          echo "REPO=$REPO" >> $GITHUB_ENV
-
-      - name: Inject GitHub Pages workflow
-        env:
-          TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          CONTENT=$(base64 <<EOF
-name: Deploy Pages
-on:
-  push:
-    branches: [ main ]
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - uses: actions/deploy-pages@v4
-EOF
-)
-          curl -X PUT \
-            -H "Authorization: Bearer $TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/$OWNER/$REPO/contents/.github/workflows/pages.yml \
-            -d "{\"message\":\"Add Pages workflow\",\"content\":\"$CONTENT\"}"
+      - name: Print input
+        run: echo "Repo URL = ${{ github.event.inputs.repo_url }}"
