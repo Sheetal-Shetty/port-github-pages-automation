@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       repo_url:
-        description: "GitHub repo URL"
+        description: "GitHub repository URL to deploy"
         required: true
+        type: string
 
 jobs:
   deploy:
